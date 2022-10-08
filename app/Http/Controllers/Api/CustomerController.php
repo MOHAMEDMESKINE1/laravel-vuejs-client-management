@@ -1,0 +1,89 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Http\Resources\CustomerRessource;
+use App\Models\Customer;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+
+class CustomerController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index():AnonymousResourceCollection
+    {
+        //
+        return CustomerRessource::collection(Customer::latest()->get());
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        //validation
+        $request->validate([
+            "name"=>"required",
+            "tel"=>"required ",
+             "is_favourite"=>"required |boolean",
+        ]);
+        // insert data
+        Customer::create([
+            "name"=>$request->name,
+            "tel"=>$request->tel,
+            "is_favourite"=>$request->is_favourite,
+        ]);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Customer  $customer
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Customer $customer)
+    {
+        //show customer
+        CustomerRessource::make($customer);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Customer  $customer
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, Customer $customer)
+    {
+        //
+        $request->validate([
+            "name"=>"required",
+            "tel"=>"required ",
+             "is_favourite"=>"required |boolean",
+        ]);
+
+        $customer->update($request->only(["name","tel","is_favourite"]));
+
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Customer  $customer
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Customer $customer)
+    {
+        //
+        $customer->delete();
+    }
+}
